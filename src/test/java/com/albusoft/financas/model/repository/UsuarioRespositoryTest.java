@@ -1,7 +1,5 @@
 package com.albusoft.financas.model.repository;
 
-import static org.mockito.ArgumentMatchers.booleanThat;
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +34,13 @@ public class UsuarioRespositoryTest {
 		
 		//Verificação
 		Assertions.assertThat(result).isTrue();
+		
+	}
+	
+	@Test
+	public void deveRetornarFalsoSeNaoExisteUsuarioComEmail() {
+		usuarioRepository.deleteAll();
+		Assertions.assertThat(usuarioRepository.existsByEmail("ticianofilho@gmail.com")).isFalse();
 		
 	}
 }
