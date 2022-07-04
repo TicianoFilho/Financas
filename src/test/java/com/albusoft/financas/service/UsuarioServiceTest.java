@@ -1,7 +1,8 @@
 package com.albusoft.financas.service;
 
-import java.util.List;
+import java.util.Optional;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,30 @@ public class UsuarioServiceTest {
 		
 		//Ação
 		Assertions.assertDoesNotThrow(() -> usuarioService.validarEmail("ticianofilho@gmail.com"));
+	}
+	
+	@Test
+	public void salvarDeveSalvarOUsuario() {
+		
+		usuarioRepository.deleteAll();
+		
+		Usuario usuario = Usuario.builder().nome("Theo").email("theo@gmail.com").senha("123").build();
+		
+		Usuario usuarioSalvo = usuarioService.salvar(usuario);
+		
+		Assertions.assertTrue(!String.valueOf(usuarioSalvo.getId()).isBlank());
+		
+	}
+	
+	@Test
+	public void autenticarVerificaSeTrazEmailUsuarioDeveTrazer() {
+		usuarioRepository.deleteAll();
+		Usuario usuario = Usuario.builder().nome("Theo").email("theo@gmail.com").senha("123").build();
+		usuarioService.salvar(usuario);
+		
+		Optional<Usuario> usuarioBusca = usuarioRepository.findByEmail(usuario.getEmail());
+		
+		Assertions.assertTrue(usuarioBusca.isPresent());
 	}
 	
 	
