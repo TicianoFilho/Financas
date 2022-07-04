@@ -1,8 +1,13 @@
 package com.albusoft.financas.service.impl;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.albusoft.financas.exception.AutenticacaoUsuarioException;
 import com.albusoft.financas.exception.RegraNegocioException;
 import com.albusoft.financas.mensagens.Mensagem;
 import com.albusoft.financas.model.entity.Usuario;
@@ -10,6 +15,7 @@ import com.albusoft.financas.model.repository.UsuarioRepository;
 import com.albusoft.financas.service.UsuarioService;
 
 @Service
+@Transactional
 public class UsuarioServiceImpl implements UsuarioService {
 
 	private UsuarioRepository usuarioRepository;
@@ -27,8 +33,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	public Usuario salvar(Usuario usuario) {
-		// TODO Auto-generated method stub
-		return null;
+		validarEmail(usuario.getEmail());
+		return usuarioRepository.save(usuario);
 	}
 
 	@Override
@@ -37,6 +43,32 @@ public class UsuarioServiceImpl implements UsuarioService {
 		if (existe) {
 			throw new RegraNegocioException(Mensagem.EMAIL_EXISTE);
 		}
+	}
+
+	@Override
+	public List<Usuario> findAll() {
+		return usuarioRepository.findAll();
+	}
+
+	@Override
+	public void deletar(Usuario usuario) {
+		usuarioRepository.delete(usuario);
+	}
+
+	@Override
+	public Usuario autenticarUsuario(String email, String senha) {
+		
+		Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
+		
+		if (!usuario.isPresent()) {
+			throw new AutenticacaoUsuarioException(Mensagem.EMAIL_USUARIO_NAO_ENCONTRADO);
+		}
+		
+		if (!usuario.get().getSenha().equals(senha)) {
+			throw new AutenticacaoUsuarioException(Mensagem.SENHA_INVALIDA);
+		}
+		
+		return usuario.get();
 	}
 
 	
