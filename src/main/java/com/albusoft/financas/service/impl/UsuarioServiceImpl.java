@@ -24,12 +24,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 	public UsuarioServiceImpl(UsuarioRepository usuarioRepository) {
 		this.usuarioRepository = usuarioRepository;
 	}
-	
-	@Override
-	public Usuario autenticar(String usuario, String login) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public Usuario salvar(Usuario usuario) {

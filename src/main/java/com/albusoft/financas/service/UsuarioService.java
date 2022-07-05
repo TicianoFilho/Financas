@@ -7,7 +7,6 @@ import com.albusoft.financas.model.entity.Usuario;
 
 public interface UsuarioService {
 
-	Usuario autenticar(String usuario, String login);
 	Usuario salvar(Usuario usuario);
 	void validarEmail(String email);
 	List<Usuario> findAll();
