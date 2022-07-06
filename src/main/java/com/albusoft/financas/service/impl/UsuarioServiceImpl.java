@@ -31,6 +31,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		return usuarioRepository.save(usuario);
 	}
 
+	//Verifica se já existe o email informado cadastrado no banco
 	@Override
 	public void validarEmail(String email) {
 		boolean existe = usuarioRepository.existsByEmail(email);
