@@ -1,5 +1,7 @@
 package com.albusoft.financas.service;
 
+import static org.mockito.Mockito.doReturn;
+
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
@@ -11,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -25,14 +28,15 @@ import com.albusoft.financas.service.impl.UsuarioServiceImpl;
 @ExtendWith(MockitoExtension.class)    //para usar a annotation @MockBean
 public class UsuarioServiceTest {
 	
-	UsuarioService usuarioService;
+	@SpyBean
+	UsuarioServiceImpl usuarioService;
 	@MockBean  
 	UsuarioRepository usuarioRepository;
 	
 	@BeforeEach
 	public void setUp() {
 		//usuarioRepository = Mockito.mock(UsuarioRepository.class); useless now because of @MockBean annotation
-		usuarioService = new UsuarioServiceImpl(usuarioRepository);
+		//usuarioService = Mockito.spy(UsuarioServiceImpl.class); useless now because of @SpyBean annotation
 	}
 	
 	
@@ -58,14 +62,17 @@ public class UsuarioServiceTest {
 	}
 	
 	@Test
-	public void salvarDeveSalvarOUsuario() {
-	
+	public void salvarDeveSalvarUsuario() {
 		
-		Usuario usuario = Usuario.builder().nome("Theo").email("theo@gmail.com").senha("123").build();
+		//método que retorna void
+		Mockito.doNothing().when(usuarioService).validarEmail(Mockito.anyString());
 		
-		Usuario usuarioSalvo = usuarioService.salvar(usuario);
+		Usuario usuario = Usuario.builder().id(1).nome("Theo").email("theo@gmail.com").senha("123").build();
+		Mockito.when(usuarioRepository.save(Mockito.any(Usuario.class))).thenReturn(usuario);
 		
-		Assertions.assertTrue(!String.valueOf(usuarioSalvo.getId()).isBlank());
+		Usuario u = usuarioRepository.save(usuario);
+		
+		Assertions.assertNotNull(u);
 		
 	}
 	
@@ -103,7 +110,7 @@ public class UsuarioServiceTest {
 		Mockito.when(usuarioRepository.findByEmail(Mockito.anyString())).thenReturn(Optional.of(usuario)); //simula um retorno do usuário acima
 		
 		Assertions.assertThrows(AutenticacaoUsuarioException.class, () -> {
-			Usuario u = usuarioService.autenticarUsuario(usuario.getEmail(), "senhaErrada123");
+			usuarioService.autenticarUsuario(usuario.getEmail(), "senhaErrada123");
 		});
 	}
 	
