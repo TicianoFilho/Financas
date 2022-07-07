@@ -26,7 +26,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 
 	@Override
-	public Usuario salvar(Usuario usuario) {
+	public Usuario salvar(Usuario usuario) throws RegraNegocioException {
 		validarEmail(usuario.getEmail());
 		return usuarioRepository.save(usuario);
 	}
