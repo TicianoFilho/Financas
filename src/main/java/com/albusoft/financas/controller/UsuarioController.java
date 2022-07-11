@@ -6,9 +6,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.albusoft.financas.api.dto.UsuarioDTO;
+import com.albusoft.financas.exception.AutenticacaoUsuarioException;
 import com.albusoft.financas.exception.RegraNegocioException;
 import com.albusoft.financas.model.entity.Usuario;
 import com.albusoft.financas.service.UsuarioService;
@@ -21,6 +23,16 @@ public class UsuarioController {
 	
 	public UsuarioController(UsuarioService usuarioService) {
 		this.usuarioService = usuarioService;
+	}
+	
+	@GetMapping("/autenticar")
+	public ResponseEntity autenticarUsuario(@RequestBody UsuarioDTO usuario) {
+		try {
+			Usuario usuarioAutenticado = usuarioService.autenticarUsuario(usuario.getEmail(), usuario.getSenha());
+			return ResponseEntity.ok(usuarioAutenticado);
+		} catch (AutenticacaoUsuarioException a) {
+			return ResponseEntity.badRequest().body(a.getMessage());
+		}
 	}
 	
 	@PostMapping("/usuarios")
