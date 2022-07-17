@@ -13,12 +13,18 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.Range;
 
 import com.albusoft.financas.model.enums.StatusLancamento;
 import com.albusoft.financas.model.enums.TipoLancamento;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -27,28 +33,28 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Lancamento {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@NotBlank
-	private int id;
+	private Integer id;
 	
 	@NotBlank
 	private String descricao;
 	
-	@NotBlank
-	private int mes;
+	@Range(min = 1, max = 12)
+	private Integer mes;
 	
-	@NotBlank
-	private int ano;
+	@Min(1900)
+	private Integer ano;
 	
 	@ManyToOne
 	@JoinColumn(name = "usuario_id")
-	@NotBlank
+	@NotNull
 	private Usuario usuario;
 	
-	@NotBlank
+	@NotNull
 	private BigDecimal valor;
 	
 	@Column(name = "data_cadastro")
@@ -56,11 +62,11 @@ public class Lancamento {
 	
 	@Column(name = "tipo_lanc")
 	@Enumerated(value = EnumType.ORDINAL)
-	@NotBlank
+	@NotNull
 	private TipoLancamento tipoLancamento;	
 	
 	@Column(name = "status_lanc")
 	@Enumerated(value = EnumType.ORDINAL)
-	@NotBlank
+	@NotNull
 	private StatusLancamento statusLancamento;
 }

@@ -14,4 +14,5 @@ public interface UsuarioService {
 	void deletar(Usuario usuario);
 	Usuario autenticarUsuario(String email, String senha);
 	
+	Optional<Usuario> buscarPeloId(int id);
 }

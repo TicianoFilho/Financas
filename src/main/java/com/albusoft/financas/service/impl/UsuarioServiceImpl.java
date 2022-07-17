@@ -3,6 +3,8 @@ package com.albusoft.financas.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,13 +22,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	private UsuarioRepository usuarioRepository;
 	
-	@Autowired
 	public UsuarioServiceImpl(UsuarioRepository usuarioRepository) {
 		this.usuarioRepository = usuarioRepository;
 	}
 
 	@Override
-	public Usuario salvar(Usuario usuario) throws RegraNegocioException {
+	public Usuario salvar(@Valid Usuario usuario) throws RegraNegocioException {
 		validarEmail(usuario.getEmail());
 		return usuarioRepository.save(usuario);
 	}
@@ -65,6 +66,20 @@ public class UsuarioServiceImpl implements UsuarioService {
 		
 		return usuario.get();
 	}
+
+	@Override
+	public Optional<Usuario> buscarPeloId(int id) {
+		
+		Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
+		
+		if (!usuarioOptional.isPresent()) {
+			throw new RegraNegocioException(Mensagem.USUARIO_NAO_EXISTE);
+		}
+		
+		return usuarioOptional;
+	}
+
+	
 
 	
 }

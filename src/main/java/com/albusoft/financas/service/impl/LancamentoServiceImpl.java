@@ -3,6 +3,7 @@ package com.albusoft.financas.service.impl;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -14,6 +15,7 @@ import com.albusoft.financas.exception.RegraNegocioException;
 import com.albusoft.financas.mensagens.Mensagem;
 import com.albusoft.financas.model.entity.Lancamento;
 import com.albusoft.financas.model.enums.StatusLancamento;
+import com.albusoft.financas.model.enums.TipoLancamento;
 import com.albusoft.financas.model.repository.LancamentoRepository;
 import com.albusoft.financas.service.LancamentosService;
 
@@ -50,16 +52,20 @@ public class LancamentoServiceImpl implements LancamentosService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<Lancamento> buscar(Lancamento lancamento) {
 		
 		Example<Lancamento> example = Example.of(lancamento, 
 				ExampleMatcher.matching().withIgnoreCase().
 				withStringMatcher(StringMatcher.CONTAINING));
 		
-		return lancamentoRepository.findAll(example);
+		List<Lancamento> test = lancamentoRepository.findAll(example);
+		System.out.println(test);
+		return test;
 	}
 
 	@Override
+	@Transactional
 	public void atualizarStatus(Lancamento lancamento, StatusLancamento status) {
 		lancamento.setStatusLancamento(status);
 		editar(lancamento);
@@ -81,7 +87,7 @@ public class LancamentoServiceImpl implements LancamentosService {
 			throw new RegraNegocioException(Mensagem.ANO_LANCAMENTO_INVALIDO);
 		}
 		
-		if (lancamento.getUsuario() != null || lancamento.getUsuario().getId() <= 0) {
+		if (lancamento.getUsuario() == null || lancamento.getUsuario().getId() <= 0) {
 			throw new RegraNegocioException(Mensagem.USUARIO_LANCAMENTO_INVALIDO);
 		}
 		
@@ -94,6 +100,33 @@ public class LancamentoServiceImpl implements LancamentosService {
 		}
 		
 		
+	}
+
+	@Override
+	public Optional<Lancamento> buscarPorId(int id) {
+		
+		Optional<Lancamento> lancamentoOptional = lancamentoRepository.findById(id);
+		
+		if (!lancamentoOptional.isPresent())
+			throw new RegraNegocioException(Mensagem.LANCAMENTO_NAO_ENCONTRADO);
+		
+		return lancamentoOptional;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public BigDecimal obterSaldoPorUsuario(int usuarioId) {
+		
+		BigDecimal receita = lancamentoRepository.obterSaldoPorUsuario(usuarioId, TipoLancamento.RECEITA);
+		BigDecimal despesa = lancamentoRepository.obterSaldoPorUsuario(usuarioId, TipoLancamento.DESPESA);
+		
+		if (receita == null)
+			receita = BigDecimal.ZERO;
+		
+		if (despesa == null) 
+			despesa = BigDecimal.ZERO;
+		
+		return receita.subtract(despesa);
 	}
 
 }
