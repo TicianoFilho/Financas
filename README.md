@@ -1,2 +1,2 @@
-# Controlador simples de finanças pessoais
-## Tecnologias usadas: Java, Spring Boot, Spring Security, Spring Data JPA, ReactJs
+# Controlador simples de finanÃ§as pessoais (backend)
+## Tecnologias usadas: Java, Spring Boot, Spring Security, Spring Data JPA
